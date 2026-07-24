@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: jpetstore-partial
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/jpetstore}
+    username: ${SPRING_DATASOURCE_USERNAME:jpetstore}
+    password: ${SPRING_DATASOURCE_PASSWORD:jpetstore_pass}
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    root: INFO
+    com.example.jpetstore: DEBUG

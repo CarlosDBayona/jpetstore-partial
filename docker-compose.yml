@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jpetstore-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: jpetstore
+      POSTGRES_USER: jpetstore
+      POSTGRES_PASSWORD: jpetstore_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jpetstore -d jpetstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jpetstore-api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jpetstore
+      SPRING_DATASOURCE_USERNAME: jpetstore
+      SPRING_DATASOURCE_PASSWORD: jpetstore_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
