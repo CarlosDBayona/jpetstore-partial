@@ -10,6 +10,12 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:jpetstore_pass}
     driver-class-name: org.postgresql.Driver
 
+mybatis:
+  mapper-locations: classpath:com/example/jpetstore/mapper/*.xml
+  type-aliases-package: com.example.jpetstore.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
 logging:
   level:
     root: INFO
