@@ -475,6 +475,6 @@ Justificación (evidencia real de esta sesión, no solo teórica):
 ### 3.3 Enlace del repositorio del código modernizado
 
 - Backend nuevo (API-first, Spring Boot): **<https://github.com/CarlosDBayona/jpetstore-partial>** (público)
-- Legado con persistencia migrada a PostgreSQL: **<https://github.com/CarlosDBayona/jpetstore-modernized>** (público)
+- Legado con persistencia migrada a PostgreSQL: **<https://github.com/CarlosDBayona/jpetstore-old>** (público)
 
 Ambos repositorios son públicos; si el equipo decide hacerlos privados, deben compartirse con el usuario de GitHub `modernizacionsoft` según lo solicitado en el enunciado.
