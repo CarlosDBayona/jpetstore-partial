@@ -1,0 +1,74 @@
+version: '3.8'
+
+# Runs both JPetStore projects side by side against a single shared PostgreSQL
+# database:
+#   - jpetstore-legacy : the original Stripes/JSP app (d:\Proyecto\jpetstore)
+#   - jpetstore-api     : the new Spring Boot REST API (d:\Proyecto\jpetstore-partial)
+#
+# The database is seeded directly from the legacy project's own schema/dataload
+# scripts (mounted read-only into Postgres' docker-entrypoint-initdb.d), so data
+# is available immediately - the API does not have to wait for the legacy WAR
+# to finish deploying before it can be queried.
+#
+# Usage (from this "plans" folder):
+#   docker compose up --build
+#
+# jpetstore-api:    http://localhost:8080/api/catalog/categories
+# jpetstore-legacy: http://localhost:8081/jpetstore/
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jpetstore-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: jpetstore
+      POSTGRES_USER: jpetstore
+      POSTGRES_PASSWORD: jpetstore_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Reuse the legacy project's own schema + seed data as the source of truth.
+      - ../../jpetstore/src/main/resources/database/jpetstore-hsqldb-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../../jpetstore/src/main/resources/database/jpetstore-hsqldb-dataload.sql:/docker-entrypoint-initdb.d/02-dataload.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jpetstore -d jpetstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  jpetstore-legacy:
+    build:
+      context: ../../jpetstore
+      dockerfile: Dockerfile
+    container_name: jpetstore-legacy
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/jpetstore
+      DB_USERNAME: jpetstore
+      DB_PASSWORD: jpetstore_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  jpetstore-api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: jpetstore-api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jpetstore
+      SPRING_DATASOURCE_USERNAME: jpetstore
+      SPRING_DATASOURCE_PASSWORD: jpetstore_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

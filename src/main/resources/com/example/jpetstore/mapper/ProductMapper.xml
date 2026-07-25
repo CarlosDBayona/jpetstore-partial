@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.jpetstore.mapper.ProductMapper">
+
+  <select id="getProductListByCategory" resultType="com.example.jpetstore.domain.Product">
+    SELECT
+      productid AS productId,
+      category AS categoryId,
+      name,
+      descn AS description
+    FROM product
+    WHERE category = #{categoryId}
+  </select>
+
+</mapper>
