@@ -55,7 +55,7 @@
 |---|---|---|---|
 | `GET` | `/api/hello` | Health check & PostgreSQL version query | ✅ Done |
 | `GET` | `/api/catalog/categories` | Retrieves all pet categories | ✅ Done ([#1](https://github.com/CarlosDBayona/jpetstore-partial/issues/1)) |
-| `GET` | `/api/catalog/categories/{categoryId}/products` | Retrieves products by category ID | ⏳ In Progress ([#2](https://github.com/CarlosDBayona/jpetstore-partial/issues/2)) |
+| `GET` | `/api/catalog/categories/{categoryId}/products` | Retrieves products by category ID | ✅ Done ([#2](https://github.com/CarlosDBayona/jpetstore-partial/issues/2)) |
 | `GET` | `/api/catalog/products/{productId}` | Product details | 📅 Planned ([#3](https://github.com/CarlosDBayona/jpetstore-partial/issues/3)) |
 | `GET` | `/api/catalog/products/{productId}/items` | Item variants for a product | 📅 Planned ([#4](https://github.com/CarlosDBayona/jpetstore-partial/issues/4)) |
 | `GET` | `/api/catalog/items/{itemId}` | Item details & inventory stock | 📅 Planned ([#5](https://github.com/CarlosDBayona/jpetstore-partial/issues/5)) |
@@ -98,6 +98,21 @@ curl http://localhost:8080/api/hello
    ./mvnw spring-boot:run
    ```
 
+### Option 3: Full Hybrid Stack — Legacy App + New API + Shared PostgreSQL
+
+`plans/docker-compose.yml` runs **both** JPetStore projects side by side against a single shared PostgreSQL database, seeded directly from the legacy project's own schema/dataload scripts. Requires a sibling checkout of the legacy project at `../jpetstore` (i.e. `jpetstore` and `jpetstore-partial` as sibling folders — see [jpetstore-old](https://github.com/CarlosDBayona/jpetstore-old)).
+
+```bash
+cd plans
+docker compose up --build -d
+```
+
+* New API: `http://localhost:8080/api/catalog/categories`
+* Legacy app: `http://localhost:8081/jpetstore/actions/Catalog.action?viewCategory=&categoryId=FISH`
+* PostgreSQL: `localhost:5432` (db `jpetstore`, user `jpetstore`)
+
+The legacy app's `Category.jsp` already consumes the new API client-side via `fetch()` (with a server-rendered fallback), so both apps can be seen reading the exact same data at once.
+
 ---
 
 ## 🧪 Running Tests
@@ -115,3 +130,4 @@ Execute the unit and integration test suite:
 Detailed migration blueprints are available in the repository:
 * 📘 [Modernization API-First Plan](plans/MODERNIZATION_API_FIRST_PLAN.md)
 * 📗 [Shared PostgreSQL Persistence Plan](plans/POSTGRESQL_SHARED_PERSISTENCE_PLAN.md)
+* 📙 [To-Be Architecture & Experiment Report (Pregunta 1)](plans/PREGUNTA_1_ARQUITECTURA_TO_BE_Y_EXPERIMENTO.md)
