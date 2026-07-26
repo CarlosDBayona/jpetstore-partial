@@ -1,8 +1,10 @@
 package com.example.jpetstore.controller;
 
 import com.example.jpetstore.domain.Category;
+import com.example.jpetstore.domain.Item;
 import com.example.jpetstore.domain.Product;
 import com.example.jpetstore.mapper.CategoryMapper;
+import com.example.jpetstore.mapper.ItemMapper;
 import com.example.jpetstore.mapper.ProductMapper;
 import com.example.jpetstore.service.CatalogService;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -23,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CatalogController.class)
 @MockBean(CategoryMapper.class)
 @MockBean(ProductMapper.class)
+@MockBean(ItemMapper.class)
 class CatalogControllerTest {
 
     @Autowired
@@ -64,5 +68,25 @@ class CatalogControllerTest {
                 .andExpect(jsonPath("$[0].name", is("Angelfish")))
                 .andExpect(jsonPath("$[1].productId", is("FI-SW-02")))
                 .andExpect(jsonPath("$[1].name", is("Tiger Shark")));
+    }
+
+    @Test
+    void getItemListByProduct_ShouldReturnItemsForProduct() throws Exception {
+        Item smallAngelfish = new Item("EST-1", "FI-SW-01", new BigDecimal("16.50"), new BigDecimal("10.00"), 1,
+                "P", "Small", null, null, null, null);
+        Item largeAngelfish = new Item("EST-2", "FI-SW-01", new BigDecimal("16.50"), new BigDecimal("10.00"), 1,
+                "P", "Large", null, null, null, null);
+
+        Mockito.when(catalogService.getItemListByProduct("FI-SW-01")).thenReturn(List.of(smallAngelfish, largeAngelfish));
+
+        mockMvc.perform(get("/api/catalog/products/FI-SW-01/items")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].itemId", is("EST-1")))
+                .andExpect(jsonPath("$[0].productId", is("FI-SW-01")))
+                .andExpect(jsonPath("$[0].attribute1", is("Small")))
+                .andExpect(jsonPath("$[1].itemId", is("EST-2")))
+                .andExpect(jsonPath("$[1].attribute1", is("Large")));
     }
 }
