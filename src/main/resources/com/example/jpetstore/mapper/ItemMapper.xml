@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.jpetstore.mapper.ItemMapper">
+
+  <select id="getItem" resultType="com.example.jpetstore.domain.Item">
+    SELECT
+      i.itemid AS itemId,
+      i.listprice AS listPrice,
+      i.unitcost AS unitCost,
+      i.supplier AS supplierId,
+      i.status,
+      i.attr1 AS attribute1,
+      i.attr2 AS attribute2,
+      i.attr3 AS attribute3,
+      i.attr4 AS attribute4,
+      i.attr5 AS attribute5,
+      v.qty AS quantity,
+      p.productid AS "product.productId",
+      p.category AS "product.categoryId",
+      p.name AS "product.name",
+      p.descn AS "product.description"
+    FROM item i, inventory v, product p
+    WHERE p.productid = i.productid
+      AND i.itemid = v.itemid
+      AND i.itemid = #{itemId}
+  </select>
+
+</mapper>

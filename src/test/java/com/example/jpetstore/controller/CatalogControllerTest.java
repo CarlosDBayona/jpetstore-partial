@@ -1,8 +1,10 @@
 package com.example.jpetstore.controller;
 
 import com.example.jpetstore.domain.Category;
+import com.example.jpetstore.domain.Item;
 import com.example.jpetstore.domain.Product;
 import com.example.jpetstore.mapper.CategoryMapper;
+import com.example.jpetstore.mapper.ItemMapper;
 import com.example.jpetstore.mapper.ProductMapper;
 import com.example.jpetstore.service.CatalogService;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -23,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CatalogController.class)
 @MockBean(CategoryMapper.class)
 @MockBean(ProductMapper.class)
+@MockBean(ItemMapper.class)
 class CatalogControllerTest {
 
     @Autowired
@@ -64,5 +68,41 @@ class CatalogControllerTest {
                 .andExpect(jsonPath("$[0].name", is("Angelfish")))
                 .andExpect(jsonPath("$[1].productId", is("FI-SW-02")))
                 .andExpect(jsonPath("$[1].name", is("Tiger Shark")));
+    }
+
+    @Test
+    void getItem_ShouldReturnItemDetails() throws Exception {
+        Item item = new Item();
+        item.setItemId("EST-1");
+        item.setListPrice(new BigDecimal("16.50"));
+        item.setUnitCost(new BigDecimal("10.00"));
+        item.setSupplierId(1);
+        item.setStatus("P");
+        item.setAttribute1("Large");
+        item.setQuantity(10000);
+        item.setProduct(new Product("FI-SW-01", "FISH", "Angelfish", "Salt Water fish from Australia"));
+
+        Mockito.when(catalogService.getItem("EST-1")).thenReturn(item);
+
+        mockMvc.perform(get("/api/catalog/items/EST-1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itemId", is("EST-1")))
+                .andExpect(jsonPath("$.listPrice", is(16.50)))
+                .andExpect(jsonPath("$.unitCost", is(10.00)))
+                .andExpect(jsonPath("$.status", is("P")))
+                .andExpect(jsonPath("$.attribute1", is("Large")))
+                .andExpect(jsonPath("$.quantity", is(10000)))
+                .andExpect(jsonPath("$.product.productId", is("FI-SW-01")))
+                .andExpect(jsonPath("$.product.name", is("Angelfish")));
+    }
+
+    @Test
+    void getItem_ShouldReturnNotFoundWhenItemDoesNotExist() throws Exception {
+        Mockito.when(catalogService.getItem("EST-404")).thenReturn(null);
+
+        mockMvc.perform(get("/api/catalog/items/EST-404")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

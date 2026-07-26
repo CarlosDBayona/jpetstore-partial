@@ -1,6 +1,7 @@
 package com.example.jpetstore.controller;
 
 import com.example.jpetstore.domain.Category;
+import com.example.jpetstore.domain.Item;
 import com.example.jpetstore.domain.Product;
 import com.example.jpetstore.service.CatalogService;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,18 @@ public class CatalogController {
     public ResponseEntity<List<Product>> getProductListByCategory(@PathVariable String categoryId) {
         List<Product> products = catalogService.getProductListByCategory(categoryId);
         return ResponseEntity.ok(products);
+    }
+
+    /**
+     * GET /api/catalog/items/{itemId} - Item detail and stock quantity.
+     * Implements Issue #5. Returns 404 Not Found when the item does not exist.
+     */
+    @GetMapping("/items/{itemId}")
+    public ResponseEntity<Item> getItem(@PathVariable String itemId) {
+        Item item = catalogService.getItem(itemId);
+        if (item == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(item);
     }
 }
