@@ -124,10 +124,3 @@ Execute the unit and integration test suite:
 ```
 
 ---
-
-## 📄 Architectural Documentation
-
-Detailed migration blueprints are available in the repository:
-* 📘 [Modernization API-First Plan](plans/MODERNIZATION_API_FIRST_PLAN.md)
-* 📗 [Shared PostgreSQL Persistence Plan](plans/POSTGRESQL_SHARED_PERSISTENCE_PLAN.md)
-* 📙 [To-Be Architecture & Experiment Report (Pregunta 1)](plans/PREGUNTA_1_ARQUITECTURA_TO_BE_Y_EXPERIMENTO.md)
