@@ -9,6 +9,11 @@ import java.util.List;
 public interface ProductMapper {
 
     /**
+     * Retrieves a single product by its id, or null if it does not exist.
+     */
+    Product getProduct(String productId);
+
+    /**
      * Retrieves the list of products belonging to the given category.
      */
     List<Product> getProductListByCategory(String categoryId);

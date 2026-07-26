@@ -71,6 +71,29 @@ class CatalogControllerTest {
     }
 
     @Test
+    void getProduct_ShouldReturnProduct_WhenFound() throws Exception {
+        Product angelfish = new Product("FI-SW-01", "FISH", "Angelfish", "Salt Water fish from Australia");
+
+        Mockito.when(catalogService.getProduct("FI-SW-01")).thenReturn(angelfish);
+
+        mockMvc.perform(get("/api/catalog/products/FI-SW-01")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId", is("FI-SW-01")))
+                .andExpect(jsonPath("$.categoryId", is("FISH")))
+                .andExpect(jsonPath("$.name", is("Angelfish")));
+    }
+
+    @Test
+    void getProduct_ShouldReturnNotFound_WhenProductDoesNotExist() throws Exception {
+        Mockito.when(catalogService.getProduct("NOPE-99")).thenReturn(null);
+
+        mockMvc.perform(get("/api/catalog/products/NOPE-99")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void getItemListByProduct_ShouldReturnItemsForProduct() throws Exception {
         Item smallAngelfish = new Item("EST-1", "FI-SW-01", new BigDecimal("16.50"), new BigDecimal("10.00"), 1,
                 "P", "Small", null, null, null, null);
