@@ -27,6 +27,10 @@ public class CatalogService {
         return categoryMapper.getCategoryList();
     }
 
+    public Product getProduct(String productId) {
+        return productMapper.getProduct(productId);
+    }
+
     public List<Product> getProductListByCategory(String categoryId) {
         return productMapper.getProductListByCategory(categoryId);
     }

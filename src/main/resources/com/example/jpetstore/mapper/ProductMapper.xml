@@ -4,6 +4,16 @@
 
 <mapper namespace="com.example.jpetstore.mapper.ProductMapper">
 
+  <select id="getProduct" resultType="com.example.jpetstore.domain.Product">
+    SELECT
+      productid AS productId,
+      category AS categoryId,
+      name,
+      descn AS description
+    FROM product
+    WHERE productid = #{productId}
+  </select>
+
   <select id="getProductListByCategory" resultType="com.example.jpetstore.domain.Product">
     SELECT
       productid AS productId,

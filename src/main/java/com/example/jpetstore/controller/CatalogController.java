@@ -45,6 +45,16 @@ public class CatalogController {
     }
 
     /**
+     * GET /api/catalog/products/{productId} - Product detail.
+     * Implements Issue #3.
+     */
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<Product> getProduct(@PathVariable String productId) {
+        Product product = catalogService.getProduct(productId);
+        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+    }
+
+    /**
      * GET /api/catalog/products/{productId}/items - List item variants by product.
      * Implements Issue #4.
      */
