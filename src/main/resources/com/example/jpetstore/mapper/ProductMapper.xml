@@ -14,4 +14,14 @@
     WHERE category = #{categoryId}
   </select>
 
+  <select id="searchProductList" resultType="com.example.jpetstore.domain.Product">
+    SELECT
+      productid AS productId,
+      category AS categoryId,
+      name,
+      descn AS description
+    FROM product
+    WHERE lower(name) LIKE #{keyword}
+  </select>
+
 </mapper>

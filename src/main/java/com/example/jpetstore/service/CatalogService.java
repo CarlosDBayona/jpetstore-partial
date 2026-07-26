@@ -6,6 +6,7 @@ import com.example.jpetstore.mapper.CategoryMapper;
 import com.example.jpetstore.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,5 +26,19 @@ public class CatalogService {
 
     public List<Product> getProductListByCategory(String categoryId) {
         return productMapper.getProductListByCategory(categoryId);
+    }
+
+    /**
+     * Searches products by keyword, mirroring the legacy
+     * CatalogService.searchProductList(keywords): the query is split on
+     * whitespace and each term is matched case-insensitively against the
+     * product name.
+     */
+    public List<Product> searchProductList(String keywords) {
+        List<Product> products = new ArrayList<>();
+        for (String keyword : keywords.split("\\s+")) {
+            products.addAll(productMapper.searchProductList("%" + keyword.toLowerCase() + "%"));
+        }
+        return products;
     }
 }

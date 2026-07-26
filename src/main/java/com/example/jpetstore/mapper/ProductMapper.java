@@ -12,4 +12,9 @@ public interface ProductMapper {
      * Retrieves the list of products belonging to the given category.
      */
     List<Product> getProductListByCategory(String categoryId);
+
+    /**
+     * Retrieves the list of products whose name matches the given LIKE pattern.
+     */
+    List<Product> searchProductList(String keyword);
 }

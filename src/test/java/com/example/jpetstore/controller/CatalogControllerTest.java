@@ -65,4 +65,37 @@ class CatalogControllerTest {
                 .andExpect(jsonPath("$[1].productId", is("FI-SW-02")))
                 .andExpect(jsonPath("$[1].name", is("Tiger Shark")));
     }
+
+    @Test
+    void searchProducts_ShouldReturnMatchingProducts() throws Exception {
+        Product angelfish = new Product("FI-SW-01", "FISH", "Angelfish", "Salt Water fish from Australia");
+        Product goldfish = new Product("FI-FW-02", "FISH", "Goldfish", "Fresh Water fish from China");
+
+        Mockito.when(catalogService.searchProductList("fish")).thenReturn(List.of(angelfish, goldfish));
+
+        mockMvc.perform(get("/api/catalog/products/search")
+                .param("keyword", "fish")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].productId", is("FI-SW-01")))
+                .andExpect(jsonPath("$[0].name", is("Angelfish")))
+                .andExpect(jsonPath("$[1].productId", is("FI-FW-02")))
+                .andExpect(jsonPath("$[1].name", is("Goldfish")));
+    }
+
+    @Test
+    void searchProducts_ShouldReturnBadRequestWhenKeywordIsMissing() throws Exception {
+        mockMvc.perform(get("/api/catalog/products/search")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void searchProducts_ShouldReturnBadRequestWhenKeywordIsEmpty() throws Exception {
+        mockMvc.perform(get("/api/catalog/products/search")
+                .param("keyword", "  ")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

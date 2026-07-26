@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -40,6 +41,20 @@ public class CatalogController {
     @GetMapping("/categories/{categoryId}/products")
     public ResponseEntity<List<Product>> getProductListByCategory(@PathVariable String categoryId) {
         List<Product> products = catalogService.getProductListByCategory(categoryId);
+        return ResponseEntity.ok(products);
+    }
+
+    /**
+     * GET /api/catalog/products/search?keyword={query} - Search products by keyword.
+     * Implements Issue #6. Returns 400 Bad Request if the keyword parameter is
+     * missing or empty.
+     */
+    @GetMapping("/products/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam(required = false) String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Product> products = catalogService.searchProductList(keyword.trim());
         return ResponseEntity.ok(products);
     }
 }
