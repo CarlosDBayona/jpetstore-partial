@@ -1,6 +1,7 @@
 package com.example.jpetstore.controller;
 
 import com.example.jpetstore.domain.Category;
+import com.example.jpetstore.domain.Item;
 import com.example.jpetstore.domain.Product;
 import com.example.jpetstore.service.CatalogService;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,15 @@ public class CatalogController {
     public ResponseEntity<List<Product>> getProductListByCategory(@PathVariable String categoryId) {
         List<Product> products = catalogService.getProductListByCategory(categoryId);
         return ResponseEntity.ok(products);
+    }
+
+    /**
+     * GET /api/catalog/products/{productId}/items - List item variants by product.
+     * Implements Issue #4.
+     */
+    @GetMapping("/products/{productId}/items")
+    public ResponseEntity<List<Item>> getItemListByProduct(@PathVariable String productId) {
+        List<Item> items = catalogService.getItemListByProduct(productId);
+        return ResponseEntity.ok(items);
     }
 }
